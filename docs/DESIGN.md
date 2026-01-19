@@ -1123,6 +1123,188 @@ The `extern "C"` ensures Rust uses the correct calling convention (which for x86
 
 ---
 
+## Environmental Dependencies
+
+### Overview
+
+Windows binaries don't operate in isolation—they expect a rich execution environment. Understanding these dependencies is crucial for determining project scope and implementation priorities.
+
+**See [DEPENDENCIES.md](DEPENDENCIES.md) for comprehensive coverage of all Windows environment expectations.**
+
+### Dependency Hierarchy
+
+```
+Console Apps (Simple)
+    ↓
+Console Apps (Advanced) → Multi-threading, File I/O
+    ↓
+GUI Apps (Basic) → Window Manager, Graphics, Input
+    ↓
+GUI Apps (Advanced) → Controls, Dialogs, Fonts
+    ↓
+Networked Apps → TCP/IP, Sockets
+    ↓
+Complex Apps → COM, Security, Services
+```
+
+### Critical Dependencies by Application Type
+
+#### Console Applications (Phase 4-5)
+
+**Minimal requirements**:
+- kernel32.dll core functions (GetStdHandle, WriteFile, ExitProcess)
+- Standard handles (stdin, stdout, stderr)
+- TEB/PEB structures with basic fields
+- Heap allocator
+- Environment variables
+- Basic file system
+
+**Extended requirements** (Phase 5-6):
+- Command line processing
+- File I/O (CreateFile, ReadFile, WriteFile, CloseHandle)
+- Directory operations
+- Time/date functions
+- Minimal registry (for configuration queries)
+- Multi-threading and synchronization (Phase 6)
+
+#### GUI Applications (Phase 7+)
+
+**Essential additions**:
+- user32.dll - Window creation, message loop, input handling
+- gdi32.dll - Graphics primitives (lines, rectangles, text, bitmaps)
+- Framebuffer access (replace VGA text mode)
+- Keyboard and mouse drivers
+- Font rendering system
+- Window manager (Z-order, clipping, hit testing)
+
+**Advanced GUI** (Phase 8+):
+- comctl32.dll - Common controls (buttons, lists, tabs)
+- comdlg32.dll - Common dialogs (open/save file, color picker)
+- gdiplus.dll - Enhanced graphics (anti-aliasing, alpha blending, image formats)
+- Menu system, clipboard, drag-and-drop
+
+### System Services and Background Components
+
+#### Registry
+
+**Why needed**: Configuration storage, file associations, system information
+
+**Implementation strategy**:
+1. Phase 5: In-memory fake registry with pre-populated values
+2. Phase 6+: Parse real registry hives or maintain persistent registry
+
+**Key registry paths apps query**:
+```
+HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion → System version
+HKLM\SOFTWARE\Classes → File associations
+HKCU\Software\<AppName> → Application settings
+HKLM\SYSTEM\CurrentControlSet\Control → System config
+```
+
+#### File System Structure
+
+Apps expect standard Windows directories:
+```
+C:\Windows\System32\ → System DLLs
+C:\Windows\Fonts\ → Font files
+C:\Users\<User>\AppData\Local\ → App data
+C:\Windows\Temp\ → Temporary files
+```
+
+**Strategy**: Virtual file system that fakes these paths, returning fake metadata for system files.
+
+#### Dynamic Linking
+
+**LoadLibrary/GetProcAddress**: Apps may load DLLs at runtime
+
+**Implementation**:
+- Phase 5: Pre-register all our DLL implementations
+- Phase 6+: Support dynamic PE loading for additional DLLs
+
+#### Named Objects
+
+**Mutexes, Events, Semaphores**: Used for synchronization and single-instance apps
+
+**Example**: `CreateMutexW(NULL, FALSE, L"Global\\MyAppMutex")`
+
+**Strategy**: Track named objects in kernel data structures (Phase 6)
+
+### Discovery-Driven Development
+
+**Don't implement everything upfront.** Instead:
+
+1. **Run real binaries** and track missing imports
+2. **Implement logging stub** that reports which functions are called:
+   ```rust
+   extern "C" fn missing_api_stub() -> usize {
+       serial_println!("STUB: Missing API called from {}", get_return_address());
+       0  // Safe default
+   }
+   ```
+3. **Prioritize by frequency**: Implement most-called functions first
+4. **Test incrementally**: Start with simple apps, gradually increase complexity
+
+### Compatibility Testing Strategy
+
+**Progressive binary testing** (from simple to complex):
+
+1. **Phase 4-5**: Custom test binaries, simple utilities
+2. **Phase 5-6**: busybox-w32 (Unix utilities), 7-zip, curl
+3. **Phase 6**: Tiny C Compiler, SQLite
+4. **Phase 7**: Simple GUI apps, custom Win32 tests
+5. **Phase 8+**: Notepad++, PuTTY, simple games
+
+Each binary will reveal new API requirements, guiding implementation priorities.
+
+### What We Don't Need (Usually)
+
+**Can often be stubbed or omitted**:
+- Windows Explorer (desktop shell)
+- Windows Event Log (can log to serial instead)
+- Windows Management Instrumentation (WMI)
+- Background services (BITS, Windows Update, etc.)
+- Security/authentication services (unless app specifically needs them)
+- Service Control Manager (for Windows services)
+
+### Scope Management
+
+**In scope for this project**:
+- ✅ Console applications (full support by Phase 6)
+- ✅ Basic GUI applications (Phase 7-8)
+- ⚠️ Networked applications (Phase 9+, ambitious)
+- ❌ Full Windows compatibility (not a goal)
+
+**Out of scope**:
+- ❌ Running arbitrary Windows software
+- ❌ Complete API coverage (thousands of functions)
+- ❌ Advanced features (COM, security, services) unless needed for target apps
+- ❌ Windows desktop environment
+
+### Implementation Priorities
+
+**Must have** (Phase 4-5):
+- kernel32.dll core API
+- Basic I/O, heap, files
+- Minimal registry stub
+
+**Should have** (Phase 6):
+- Multi-threading
+- Extended file operations
+- Dynamic DLL loading
+- Full registry simulation
+
+**Nice to have** (Phase 7+):
+- GUI support (user32, gdi32)
+- Enhanced graphics
+- Networking
+
+**Future exploration** (Phase 8+):
+- Advanced GUI features
+- COM runtime
+- More DLLs as needed
+
+---
+
 ## Future Directions
 
 ### Phase 6: Advanced Windows Features
