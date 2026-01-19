@@ -160,7 +160,18 @@ This project is developed in phases, with each phase building on the previous:
 - File I/O
 - Structured Exception Handling (SEH)
 
-See [ROADMAP.md](ROADMAP.md) for detailed progress tracking.
+See [ROADMAP.md](ROADMAP.md) for high-level progress tracking.
+
+## Detailed Documentation
+
+- **[DESIGN.md](docs/DESIGN.md)** - Complete architecture, design decisions, and technical details
+- **[AI_AGENT_GUIDE.md](docs/AI_AGENT_GUIDE.md)** - Guide for AI assistants (Claude, Copilot, etc.) navigating the codebase
+- **Phase Task Lists** - Detailed implementation checklists:
+  - [PHASE1.md](docs/PHASE1.md) - Userspace prototype (~194 tasks)
+  - [PHASE2.md](docs/PHASE2.md) - Kernel foundation (~240 tasks)
+  - [PHASE3.md](docs/PHASE3.md) - Windows execution context (~135 tasks)
+  - [PHASE4.md](docs/PHASE4.md) - API implementation (~135 tasks)
+  - [PHASE5.md](docs/PHASE5.md) - Expansion features (~215 tasks)
 
 ## Technology Stack
 

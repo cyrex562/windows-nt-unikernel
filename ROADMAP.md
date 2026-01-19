@@ -6,6 +6,23 @@ To execute a standard, compiled Windows x86_64 binary (`.exe`) inside a Unikerne
 
 ---
 
+## 📚 Documentation Index
+
+For detailed information, see:
+
+- **[DESIGN.md](docs/DESIGN.md)** - Comprehensive architecture and design document
+- **[AI_AGENT_GUIDE.md](docs/AI_AGENT_GUIDE.md)** - Guide for AI assistants navigating the codebase
+- **Phase Task Lists**:
+  - **[PHASE1.md](docs/PHASE1.md)** - Detailed checklist for Phase 1 (~194 tasks)
+  - **[PHASE2.md](docs/PHASE2.md)** - Detailed checklist for Phase 2 (~240 tasks)
+  - **[PHASE3.md](docs/PHASE3.md)** - Detailed checklist for Phase 3 (~135 tasks)
+  - **[PHASE4.md](docs/PHASE4.md)** - Detailed checklist for Phase 4 (~135 tasks)
+  - **[PHASE5.md](docs/PHASE5.md)** - Detailed checklist for Phase 5 (~215 tasks)
+
+This document provides a high-level overview. For granular task-by-task implementation details, refer to the phase documents above.
+
+---
+
 ## Technology Decisions
 
 | Component | Choice | Rationale |
