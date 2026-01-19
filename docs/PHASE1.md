@@ -101,18 +101,18 @@
 - [x] **2.6.4** Log data directory information
 
 ### 2.7 Section Headers Parsing
-- [ ] **2.7.1** Read all section headers (number from COFF header)
-- [ ] **2.7.2** For each section, parse:
-  - [ ] Name (8 bytes, null-padded)
-  - [ ] Virtual size (size in memory)
-  - [ ] Virtual address (RVA where section loads)
-  - [ ] Size of raw data (size in file)
-  - [ ] Pointer to raw data (file offset)
-  - [ ] Pointer to relocations (usually 0 for executables)
-  - [ ] Pointer to line numbers (usually 0)
-  - [ ] Number of relocations
-  - [ ] Number of line numbers
-  - [ ] Characteristics flags
+- [x] **2.7.1** Read all section headers (number from COFF header)
+- [x] **2.7.2** For each section, parse:
+  - [x] Name (8 bytes, null-padded)
+  - [x] Virtual size (size in memory)
+  - [x] Virtual address (RVA where section loads)
+  - [x] Size of raw data (size in file)
+  - [x] Pointer to raw data (file offset)
+  - [x] Pointer to relocations (usually 0 for executables)
+  - [x] Pointer to line numbers (usually 0)
+  - [x] Number of relocations
+  - [x] Number of line numbers
+  - [x] Characteristics flags
 - [ ] **2.7.3** Validate section alignments
 - [ ] **2.7.4** Validate section file offsets are within file bounds
 - [ ] **2.7.5** Validate section virtual addresses don't overlap

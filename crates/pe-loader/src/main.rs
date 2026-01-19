@@ -43,7 +43,7 @@ fn main() -> Result<()> {
         exe_path
     ))?;
     // 3. Map sections
-    let data_dirs = loader::parse_data_directories(&pe).with_context(|| format!("failed to parse data directories for {}", exe_path))?;
+    let data_dirs: std::collections::HashMap<loader::DataDirectoryType, loader::DataDirEntry> = loader::parse_data_directories(&pe).with_context(|| format!("failed to parse data directories for {}", exe_path))?;
     
     // 4. Apply relocations
     // 5. Resolve imports

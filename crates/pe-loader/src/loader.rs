@@ -1,9 +1,14 @@
 //! PE binary loading and parsing
 
 use anyhow::{Context, Result};
-use goblin::pe::{self, PE, certificate_table, debug, header::CoffHeader, optional_header::OptionalHeader};
+use goblin::pe::{
+    self, certificate_table, debug, header::CoffHeader, optional_header::OptionalHeader, PE,
+};
 use log::{debug, error, info, log_enabled, Level};
-use std::{collections::{HashMap, hash_map}, fs};
+use std::{
+    collections::{hash_map, HashMap},
+    fs,
+};
 
 /// Load a PE binary from disk
 pub fn load_binary(path: &str) -> Result<Vec<u8>> {
@@ -150,8 +155,11 @@ pub fn parse_coff_header_characteristics(pe: &PE) {
 }
 
 pub fn parse_opt_hdr(pe: &PE) -> Result<OptionalHeader> {
-
-    let opt_hdr = pe.header.optional_header.expect("Optional header missing").clone();
+    let opt_hdr = pe
+        .header
+        .optional_header
+        .expect("Optional header missing")
+        .clone();
 
     // check opt hdr magic eq 0x20B
     debug!("opt hdr magic: {:#X}", opt_hdr.standard_fields.magic);
@@ -162,76 +170,83 @@ pub fn parse_opt_hdr(pe: &PE) -> Result<OptionalHeader> {
     }
 
     // check linker version
-    debug!("opt hdr linker version: {}.{}", 
-        opt_hdr.standard_fields.major_linker_version,
-        opt_hdr.standard_fields.minor_linker_version
+    debug!(
+        "opt hdr linker version: {}.{}",
+        opt_hdr.standard_fields.major_linker_version, opt_hdr.standard_fields.minor_linker_version
     );
 
     // read code size
-    debug!("opt hdr code size: {:#X}", 
+    debug!(
+        "opt hdr code size: {:#X}",
         opt_hdr.standard_fields.size_of_code
     );
 
     // read data size
-    debug!("opt hdr data size: {:#X}", 
+    debug!(
+        "opt hdr data size: {:#X}",
         opt_hdr.standard_fields.size_of_initialized_data
     );
 
     // read bss size
-    debug!("opt hdr bss size: {:#X}", 
+    debug!(
+        "opt hdr bss size: {:#X}",
         opt_hdr.standard_fields.size_of_uninitialized_data
     );
 
     // read entry point rva
-    debug!("opt hdr entry point rva: {:#X}", 
+    debug!(
+        "opt hdr entry point rva: {:#X}",
         opt_hdr.standard_fields.address_of_entry_point
     );
 
     // read base of code RVA
-    debug!("opt hdr base of code rva: {:#X}", 
+    debug!(
+        "opt hdr base of code rva: {:#X}",
         opt_hdr.standard_fields.base_of_code
     );
 
     // read image base address
-    debug!("opt hdr image base addr: {:#X}", 
+    debug!(
+        "opt hdr image base addr: {:#X}",
         opt_hdr.windows_fields.image_base
     );
 
     // read section alignment
-    debug!("opt hdr section alignment: {:#X}", 
+    debug!(
+        "opt hdr section alignment: {:#X}",
         opt_hdr.windows_fields.section_alignment
     );
 
     // read file alignment
-    debug!("opt hdr file alignment: {:#X}", 
+    debug!(
+        "opt hdr file alignment: {:#X}",
         opt_hdr.windows_fields.file_alignment
     );
 
     // read os and version
-    debug!("opt hdr os version: {}.{}", 
+    debug!(
+        "opt hdr os version: {}.{}",
         opt_hdr.windows_fields.major_operating_system_version,
         opt_hdr.windows_fields.minor_operating_system_version
     );
 
     // read image size
-    debug!("opt hdr image size: {:#X}", 
+    debug!(
+        "opt hdr image size: {:#X}",
         opt_hdr.windows_fields.size_of_image
     );
 
     // read header size
-    debug!("opt hdr header size: {:#X}", 
+    debug!(
+        "opt hdr header size: {:#X}",
         opt_hdr.windows_fields.size_of_headers
     );
 
     // read checksum
-    debug!("opt hdr checksum: {:#X}", 
-        opt_hdr.windows_fields.check_sum
-    );
+    debug!("opt hdr checksum: {:#X}", opt_hdr.windows_fields.check_sum);
 
     // read subsystem and verify IMAGE_SUBSYSTEM_WINDOWS_CUI
-    debug!("opt hdr subsystem: {:#X}", 
-        opt_hdr.windows_fields.subsystem
-    );
+    debug!("opt hdr subsystem: {:#X}", opt_hdr.windows_fields.subsystem);
     if opt_hdr.windows_fields.subsystem != goblin::pe::subsystem::IMAGE_SUBSYSTEM_WINDOWS_CUI {
         return anyhow::bail!("Unsupported subsystem");
     }
@@ -269,32 +284,39 @@ pub fn parse_opt_hdr(pe: &PE) -> Result<OptionalHeader> {
     if dll_characteristics & pe::dll_characteristic::IMAGE_DLLCHARACTERISTICS_GUARD_CF != 0 {
         debug!("opt hdr dll char: IMAGE_DLLCHARACTERISTICS_GUARD_CF");
     }
-    if dll_characteristics & pe::dll_characteristic::IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE != 0 {
+    if dll_characteristics & pe::dll_characteristic::IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE
+        != 0
+    {
         debug!("opt hdr dll char: IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE");
     }
 
     // read stack reserve size
-    debug!("opt hdr stack reserve size: {:#X}", 
+    debug!(
+        "opt hdr stack reserve size: {:#X}",
         opt_hdr.windows_fields.size_of_stack_reserve
     );
 
     // read stack commit size
-    debug!("opt hdr stack commit size: {:#X}", 
+    debug!(
+        "opt hdr stack commit size: {:#X}",
         opt_hdr.windows_fields.size_of_stack_commit
     );
 
     // read heap reserve size
-    debug!("opt hdr heap reserve size: {:#X}", 
+    debug!(
+        "opt hdr heap reserve size: {:#X}",
         opt_hdr.windows_fields.size_of_heap_reserve
     );
 
     // read heap commit size
-    debug!("opt hdr heap commit size: {:#X}", 
+    debug!(
+        "opt hdr heap commit size: {:#X}",
         opt_hdr.windows_fields.size_of_heap_commit
     );
 
     // read number of data directories
-    debug!("opt hdr number of data directories: {:#X}", 
+    debug!(
+        "opt hdr number of data directories: {:#X}",
         opt_hdr.windows_fields.number_of_rva_and_sizes
     );
     if opt_hdr.windows_fields.number_of_rva_and_sizes != 16 {
@@ -323,7 +345,7 @@ pub enum DataDirectoryType {
     Reserved,
 }
 
-#[derive(Debug,Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct DataDirEntry {
     pub present: bool,
     pub rva: u32,
@@ -345,102 +367,172 @@ impl DataDirEntry {
 }
 
 pub fn parse_data_directories(pe: &PE) -> Result<HashMap<DataDirectoryType, DataDirEntry>> {
-    let opt_hdr = pe.header.optional_header.as_ref().expect("Optional header missing");
+    let opt_hdr = pe
+        .header
+        .optional_header
+        .as_ref()
+        .expect("Optional header missing");
     let mut out = HashMap::new();
     let data_dirs = &opt_hdr.data_directories;
     let export_tbl_dd_info = data_dirs.get_export_table();
     match export_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::ExportTable, DataDirEntry::new(true, dd.virtual_address, dd.size)),
+        Some(dd) => out.insert(
+            DataDirectoryType::ExportTable,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
         None => out.insert(DataDirectoryType::ExportTable, DataDirEntry::new_empty()),
     };
 
     let import_tbl_dd_info = data_dirs.get_import_table();
     match import_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::ImportTable, DataDirEntry::new(true, dd.virtual_address, dd.size)),
+        Some(dd) => out.insert(
+            DataDirectoryType::ImportTable,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
         None => out.insert(DataDirectoryType::ImportTable, DataDirEntry::new_empty()),
     };
 
-
     let rsrc_tbl_dd_info = data_dirs.get_resource_table();
     match rsrc_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::ResourceTable, DataDirEntry::new(true, dd.virtual_address, dd.size)),
+        Some(dd) => out.insert(
+            DataDirectoryType::ResourceTable,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
         None => out.insert(DataDirectoryType::ResourceTable, DataDirEntry::new_empty()),
     };
 
     let except_tbl_dd_info = data_dirs.get_exception_table();
     match except_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::ExceptionTable, DataDirEntry::new(true, dd.virtual_address, dd.size)),
+        Some(dd) => out.insert(
+            DataDirectoryType::ExceptionTable,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
         None => out.insert(DataDirectoryType::ExceptionTable, DataDirEntry::new_empty()),
     };
 
     let certificate_table_dd_info = data_dirs.get_certificate_table();
     match certificate_table_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::CertificateTable, DataDirEntry::new(true, dd.virtual_address, dd.size)),
-        None => out.insert(DataDirectoryType::CertificateTable, DataDirEntry::new_empty()),
+        Some(dd) => out.insert(
+            DataDirectoryType::CertificateTable,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
+        None => out.insert(
+            DataDirectoryType::CertificateTable,
+            DataDirEntry::new_empty(),
+        ),
     };
 
     let base_reloc_tbl_dd_info = data_dirs.get_base_relocation_table();
     match base_reloc_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::BaseRelocationTable, DataDirEntry::new(true, dd.virtual_address, dd.size)),
-        None => out.insert(DataDirectoryType::BaseRelocationTable, DataDirEntry::new_empty()),
+        Some(dd) => out.insert(
+            DataDirectoryType::BaseRelocationTable,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
+        None => out.insert(
+            DataDirectoryType::BaseRelocationTable,
+            DataDirEntry::new_empty(),
+        ),
     };
 
     let debug_tbl_dd_info = data_dirs.get_debug_table();
     match debug_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::Debug, DataDirEntry::new(true, dd.virtual_address, dd.size)),
+        Some(dd) => out.insert(
+            DataDirectoryType::Debug,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
         None => out.insert(DataDirectoryType::Debug, DataDirEntry::new_empty()),
     };
 
     let arch_tbl_dd_info = data_dirs.get_architecture();
     match arch_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::Architecture, DataDirEntry::new(true, dd.virtual_address, dd.size)),
+        Some(dd) => out.insert(
+            DataDirectoryType::Architecture,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
         None => out.insert(DataDirectoryType::Architecture, DataDirEntry::new_empty()),
     };
 
     let global_ptr_tbl_dd_info = data_dirs.get_global_ptr();
     match global_ptr_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::GlobalPtr, DataDirEntry::new(true, dd.virtual_address, dd.size)),
+        Some(dd) => out.insert(
+            DataDirectoryType::GlobalPtr,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
         None => out.insert(DataDirectoryType::GlobalPtr, DataDirEntry::new_empty()),
     };
 
     let tls_tbl_dd_info = data_dirs.get_tls_table();
     match tls_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::TlsTable, DataDirEntry::new(true, dd.virtual_address, dd.size)),
+        Some(dd) => out.insert(
+            DataDirectoryType::TlsTable,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
         None => out.insert(DataDirectoryType::TlsTable, DataDirEntry::new_empty()),
     };
 
     let load_config_tbl_dd_info = data_dirs.get_load_config_table();
     match load_config_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::LoadConfigTable, DataDirEntry::new(true, dd.virtual_address, dd.size)),
-        None => out.insert(DataDirectoryType::LoadConfigTable, DataDirEntry::new_empty()),
+        Some(dd) => out.insert(
+            DataDirectoryType::LoadConfigTable,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
+        None => out.insert(
+            DataDirectoryType::LoadConfigTable,
+            DataDirEntry::new_empty(),
+        ),
     };
 
     let bound_import_tbl_dd_info = data_dirs.get_bound_import_table();
     match bound_import_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::BoundImportTable, DataDirEntry::new(true, dd.virtual_address, dd.size)),
-        None => out.insert(DataDirectoryType::BoundImportTable, DataDirEntry::new_empty()),
+        Some(dd) => out.insert(
+            DataDirectoryType::BoundImportTable,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
+        None => out.insert(
+            DataDirectoryType::BoundImportTable,
+            DataDirEntry::new_empty(),
+        ),
     };
 
     let import_addr_tbl_dd_info = data_dirs.get_import_address_table();
     match import_addr_tbl_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::ImportAddressTable, DataDirEntry::new(true, dd.virtual_address, dd.size)),
-        None => out.insert(DataDirectoryType::ImportAddressTable, DataDirEntry::new_empty()),
+        Some(dd) => out.insert(
+            DataDirectoryType::ImportAddressTable,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
+        None => out.insert(
+            DataDirectoryType::ImportAddressTable,
+            DataDirEntry::new_empty(),
+        ),
     };
 
     let delay_import_dd_info = data_dirs.get_delay_import_descriptor();
     match delay_import_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::DelayImportDescriptor, DataDirEntry::new(true, dd.virtual_address, dd.size)),
-        None => out.insert(DataDirectoryType::DelayImportDescriptor, DataDirEntry::new_empty()),
+        Some(dd) => out.insert(
+            DataDirectoryType::DelayImportDescriptor,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
+        None => out.insert(
+            DataDirectoryType::DelayImportDescriptor,
+            DataDirEntry::new_empty(),
+        ),
     };
 
     let clr_runtime_hdr_dd_info = data_dirs.get_clr_runtime_header();
     match clr_runtime_hdr_dd_info {
-        Some(dd) => out.insert(DataDirectoryType::ClrRuntimeHeader, DataDirEntry::new(true, dd.virtual_address, dd.size)),
-        None => out.insert(DataDirectoryType::ClrRuntimeHeader, DataDirEntry::new_empty()),
+        Some(dd) => out.insert(
+            DataDirectoryType::ClrRuntimeHeader,
+            DataDirEntry::new(true, dd.virtual_address, dd.size),
+        ),
+        None => out.insert(
+            DataDirectoryType::ClrRuntimeHeader,
+            DataDirEntry::new_empty(),
+        ),
     };
 
     if out[&DataDirectoryType::ImportTable].present {
-        debug!("Import Table present at RVA {:#X} with size {:#X}", 
+        debug!(
+            "Import Table present at RVA {:#X} with size {:#X}",
             out[&DataDirectoryType::ImportTable].rva,
             out[&DataDirectoryType::ImportTable].size
         );
@@ -450,25 +542,172 @@ pub fn parse_data_directories(pe: &PE) -> Result<HashMap<DataDirectoryType, Data
     }
 
     if out[&DataDirectoryType::BaseRelocationTable].present {
-        debug!("Base Relocation Table present at RVA {:#X} with size {:#X}", 
+        debug!(
+            "Base Relocation Table present at RVA {:#X} with size {:#X}",
             out[&DataDirectoryType::BaseRelocationTable].rva,
             out[&DataDirectoryType::BaseRelocationTable].size
         );
     } else {
         error!("Base Relocation Table not present");
-        return Err(anyhow::anyhow!("Base Relocation Table is required but not present"));
-    }   
+        return Err(anyhow::anyhow!(
+            "Base Relocation Table is required but not present"
+        ));
+    }
 
     if out[&DataDirectoryType::ImportAddressTable].present {
-        debug!("Import Address Table present at RVA {:#X} with size {:#X}", 
+        debug!(
+            "Import Address Table present at RVA {:#X} with size {:#X}",
             out[&DataDirectoryType::ImportAddressTable].rva,
             out[&DataDirectoryType::ImportAddressTable].size
         );
     } else {
         error!("Import Address Table not present");
-        return Err(anyhow::anyhow!("Import Address Table is required but not present"));
-    }   
+        return Err(anyhow::anyhow!(
+            "Import Address Table is required but not present"
+        ));
+    }
 
-    
     Ok(out)
+}
+
+pub fn read_section_headers(pe: &PE) {
+    let sections = pe.sections.clone();
+    for section in sections {
+        // section name
+        debug!("Section: {}", section.name().unwrap_or("InvalidName"));
+        // virtual size
+        debug!("  Virtual Size: {:#X}", section.virtual_size);
+        // virtual address
+        debug!("  Virtual Address: {:#X}", section.virtual_address);
+        // size of raw data
+        debug!("  Raw Data Size: {:#X}", section.size_of_raw_data);
+        // pointer to raw data
+        debug!("  Raw Data Pointer: {:#X}", section.pointer_to_raw_data);
+        // pointer to relocations
+        debug!(
+            "  Pointer to Relocations: {:#X}",
+            section.pointer_to_relocations
+        );
+        // pointer to line numbers
+        debug!(
+            "  Pointer to Line Numbers: {:#X}",
+            section.pointer_to_linenumbers
+        );
+        // number of line numbers
+        debug!(
+            "  Number of Line Numbers: {}",
+            section.number_of_linenumbers
+        );
+        // characteristics flags
+        debug!("  Characteristics: {:#X}", section.characteristics);
+        parse_section_characteristics(section.characteristics);
+    }
+}
+
+pub fn parse_section_characteristics(characteristics: u32) {
+    if characteristics & pe::section_table::IMAGE_SCN_CNT_CODE != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_CNT_CODE");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_CNT_INITIALIZED_DATA != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_CNT_INITIALIZED_DATA");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_CNT_UNINITIALIZED_DATA != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_CNT_UNINITIALIZED_DATA");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_LNK_OTHER != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_LNK_OTHER");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_LNK_INFO != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_LNK_INFO");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_LNK_REMOVE != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_LNK_REMOVE");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_LNK_COMDAT != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_LNK_COMDAT");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_GPREL != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_GPREL");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_PURGEABLE != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_PURGEABLE");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_16BIT != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_16BIT");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_LOCKED != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_LOCKED");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_PRELOAD != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_PRELOAD");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_1BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_1BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_2BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_2BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_4BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_4BYTES")
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_8BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_8BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_16BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_16BYTES")
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_32BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_32BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_64BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_64BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_128BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_128BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_256BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_256BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_512BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_512BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_1024BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_1024BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_2048BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_2048BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_4096BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_4096BYTES");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_8192BYTES != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_8192BYTES")
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_ALIGN_MASK != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_ALIGN_MASK");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_LNK_NRELOC_OVFL != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_LNK_NRELOC_OVFL");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_DISCARDABLE != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_DISCARDABLE");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_NOT_CACHED != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_NOT_CACHED");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_NOT_PAGED != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_NOT_PAGED");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_SHARED != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_SHARED");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_EXECUTE != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_EXECUTE");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_READ != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_READ");
+    }
+    if characteristics & pe::section_table::IMAGE_SCN_MEM_WRITE != 0 {
+        debug!("  Section Characteristic: IMAGE_SCN_MEM_WRITE");
+    }
 }
