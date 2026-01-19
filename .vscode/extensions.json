@@ -1,0 +1,19 @@
+{
+    "recommendations": [
+        // C/C++ support
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+
+        // Rust support
+        "rust-lang.rust-analyzer",
+        "vadimcn.vscode-lldb",
+
+        // Build tools
+        "skellock.just",
+
+        // Helpful utilities
+        "ms-vscode.hexeditor",
+        "eamodio.gitlens",
+        "github.copilot"
+    ]
+}

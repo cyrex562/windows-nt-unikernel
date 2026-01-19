@@ -1,0 +1,37 @@
+{
+    // C/C++ Extension Settings
+    "C_Cpp.default.configurationProvider": "ms-vscode.cpptools",
+    "C_Cpp.errorSquiggles": "enabled",
+    "C_Cpp.intelliSenseEngine": "default",
+    "C_Cpp.autocomplete": "default",
+
+    // File associations for Windows-specific files
+    "files.associations": {
+        "windows.h": "c",
+        "winbase.h": "c",
+        "winnt.h": "c",
+        "*.c": "c"
+    },
+
+    // Rust analyzer settings
+    "rust-analyzer.check.command": "clippy",
+    "rust-analyzer.cargo.features": "all",
+    "rust-analyzer.checkOnSave.allTargets": false,
+
+    // Editor settings
+    "editor.formatOnSave": true,
+    "editor.rulers": [100],
+
+    // File exclude patterns (keep target/ out of search)
+    "files.exclude": {
+        "**/target": true,
+        "**/.git": true
+    },
+
+    // Search settings
+    "search.exclude": {
+        "**/target": true,
+        "**/node_modules": true,
+        "**/.git": true
+    }
+}
