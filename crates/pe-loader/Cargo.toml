@@ -14,11 +14,13 @@ common = { path = "../common" }
 goblin.workspace = true
 anyhow.workspace = true
 log.workspace = true
+env_logger.workspace = true
+thiserror.workspace = true
 
 # For userspace prototype (Phase 1)
-env_logger = "0.11"
-memmap2 = "0.9"        # Memory mapping
-libc = "0.2"           # For mmap/mprotect
+memmap2 = "0.9" # Memory mapping
+libc = "0.2"
+# For mmap/mprotect
 
 [features]
 default = ["std"]

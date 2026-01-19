@@ -14,9 +14,10 @@
 use anyhow::{Context, Result};
 use std::env;
 
+mod error;
+mod imports;
 mod loader;
 mod memory;
-mod imports;
 
 fn main() -> Result<()> {
     env_logger::init();
@@ -32,8 +33,18 @@ fn main() -> Result<()> {
 
     // TODO: Phase 1 implementation
     // 1. Load binary from file
+    let bin_file = loader::load_binary(exe_path)
+        .with_context(|| format!("failed to load binary from {}", exe_path))?;
     // 2. Parse PE headers
+    let pe = loader::parse_pe(&bin_file)
+        .with_context(|| format!("failed to parse PE headers for {}", exe_path))?;
+    let coff_hdr = loader::parse_coff_hdr(&pe).with_context(|| format!(
+        "failed to parse COFF header for {}",
+        exe_path
+    ))?;
     // 3. Map sections
+    let data_dirs = loader::parse_data_directories(&pe).with_context(|| format!("failed to parse data directories for {}", exe_path))?;
+    
     // 4. Apply relocations
     // 5. Resolve imports
     // 6. Execute

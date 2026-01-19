@@ -15,8 +15,9 @@ volatile.workspace = true
 bitflags.workspace = true
 
 # For x86_64 architecture
-x86_64 = "0.15"
-uart_16550 = "0.3"     # Serial port driver
+# x86_64 = "0.52.0"
+x86 = "0.52"
+uart_16550 = "0.4"     # Serial port driver
 
 [dependencies.log]
 workspace = true

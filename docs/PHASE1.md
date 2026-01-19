@@ -11,20 +11,20 @@
 ## 1. Project Setup and Infrastructure
 
 ### 1.1 Development Environment
-- [ ] **1.1.1** Verify Rust toolchain is installed and up to date
-- [ ] **1.1.2** Install and configure logging framework (env_logger)
+- [x] **1.1.1** Verify Rust toolchain is installed and up to date
+- [x] **1.1.2** Install and configure logging framework (env_logger)
 - [ ] **1.1.3** Set up integration test infrastructure
-- [ ] **1.1.4** Create test fixtures directory for PE binaries
+- [x] **1.1.4** Create test fixtures directory for PE binaries
 
 ### 1.2 Error Handling
-- [ ] **1.2.1** Define custom error types in `crates/pe-loader/src/error.rs`
-  - [ ] ParseError - For PE parsing failures
-  - [ ] LoadError - For memory loading failures
-  - [ ] RelocError - For relocation failures
-  - [ ] ImportError - For import resolution failures
-  - [ ] ExecutionError - For execution failures
-- [ ] **1.2.2** Implement Display and Error traits
-- [ ] **1.2.3** Add context to all error types
+- [x] **1.2.1** Define custom error types in `crates/pe-loader/src/error.rs`
+  - [x] ParseError - For PE parsing failures
+  - [x] LoadError - For memory loading failures
+  - [x] RelocError - For relocation failures
+  - [x] ImportError - For import resolution failures
+  - [x] ExecutionError - For execution failures
+- [x] **1.2.2** Implement Display and Error traits
+- [x] **1.2.3** Add context to all error types
 
 ---
 
@@ -33,72 +33,72 @@
 **File**: `crates/pe-loader/src/loader.rs`
 
 ### 2.1 File Reading
-- [ ] **2.1.1** Implement `load_binary(path: &str) -> Result<Vec<u8>>`
-- [ ] **2.1.2** Add file size validation (min: 64 bytes for DOS header)
-- [ ] **2.1.3** Add file size limit check (e.g., max 100MB for safety)
-- [ ] **2.1.4** Add detailed logging for file operations
+- [x] **2.1.1** Implement `load_binary(path: &str) -> Result<Vec<u8>>`
+- [x] **2.1.2** Add file size validation (min: 64 bytes for DOS header)
+- [x] **2.1.3** Add file size limit check (e.g., max 100MB for safety)
+- [x] **2.1.4** Add detailed logging for file operations
 
 ### 2.2 DOS Header Parsing
-- [ ] **2.2.1** Validate DOS signature (`MZ` / 0x5A4D)
-- [ ] **2.2.2** Read `e_lfanew` offset (PE header location)
-- [ ] **2.2.3** Validate `e_lfanew` is within file bounds
+- [x] **2.2.1** Validate DOS signature (`MZ` / 0x5A4D)
+- [x] **2.2.2** Read `e_lfanew` offset (PE header location)
+- [x] **2.2.3** Validate `e_lfanew` is within file bounds
 - [ ] **2.2.4** Log DOS header information
 
 ### 2.3 PE Signature Validation
-- [ ] **2.3.1** Read 4-byte PE signature at `e_lfanew` offset
-- [ ] **2.3.2** Validate signature is `PE\0\0` (0x00004550)
-- [ ] **2.3.3** Log PE signature validation result
+- [x] **2.3.1** Read 4-byte PE signature at `e_lfanew` offset
+- [x] **2.3.2** Validate signature is `PE\0\0` (0x00004550)
+- [x] **2.3.3** Log PE signature validation result
 
 ### 2.4 COFF Header Parsing
-- [ ] **2.4.1** Parse COFF header structure
-- [ ] **2.4.2** Validate machine type is `IMAGE_FILE_MACHINE_AMD64` (0x8664)
-- [ ] **2.4.3** Read number of sections
-- [ ] **2.4.4** Read size of optional header
-- [ ] **2.4.5** Validate optional header size (should be 240 for PE32+)
-- [ ] **2.4.6** Read and log characteristics flags
-- [ ] **2.4.7** Log COFF header details
+- [x] **2.4.1** Parse COFF header structure
+- [x] **2.4.2** Validate machine type is `IMAGE_FILE_MACHINE_AMD64` (0x8664)
+- [x] **2.4.3** Read number of sections
+- [x] **2.4.4** Read size of optional header
+- [x] **2.4.5** Validate optional header size (should be 240 for PE32+)
+- [x] **2.4.6** Read and log characteristics flags
+- [x] **2.4.7** Log COFF header details
 
 ### 2.5 Optional Header Parsing (PE32+)
-- [ ] **2.5.1** Validate magic number is 0x20B (PE32+)
-- [ ] **2.5.2** Read linker version
-- [ ] **2.5.3** Read code size, data size, BSS size
-- [ ] **2.5.4** Read entry point RVA (Relative Virtual Address)
-- [ ] **2.5.5** Read base of code RVA
-- [ ] **2.5.6** Read image base address (preferred load address)
-- [ ] **2.5.7** Read section alignment
-- [ ] **2.5.8** Read file alignment
-- [ ] **2.5.9** Read OS and subsystem version
-- [ ] **2.5.10** Read image size (total size when loaded)
-- [ ] **2.5.11** Read headers size
-- [ ] **2.5.12** Read checksum (can ignore for now)
-- [ ] **2.5.13** Read subsystem (should be IMAGE_SUBSYSTEM_WINDOWS_CUI for console)
-- [ ] **2.5.14** Read DLL characteristics
-- [ ] **2.5.15** Read stack reserve/commit sizes
-- [ ] **2.5.16** Read heap reserve/commit sizes
-- [ ] **2.5.17** Read number of data directories (should be 16)
-- [ ] **2.5.18** Log all optional header fields
+- [x] **2.5.1** Validate magic number is 0x20B (PE32+)
+- [x] **2.5.2** Read linker version
+- [x] **2.5.3** Read code size, data size, BSS size
+- [x] **2.5.4** Read entry point RVA (Relative Virtual Address)
+- [x] **2.5.5** Read base of code RVA
+- [x] **2.5.6** Read image base address (preferred load address)
+- [x] **2.5.7** Read section alignment
+- [x] **2.5.8** Read file alignment
+- [x] **2.5.9** Read OS and subsystem version
+- [x] **2.5.10** Read image size (total size when loaded)
+- [x] **2.5.11** Read headers size
+- [x] **2.5.12** Read checksum (can ignore for now)
+- [x] **2.5.13** Read subsystem (should be IMAGE_SUBSYSTEM_WINDOWS_CUI for console)
+- [x] **2.5.14** Read DLL characteristics
+- [x] **2.5.15** Read stack reserve/commit sizes
+- [x] **2.5.16** Read heap reserve/commit sizes
+- [x] **2.5.17** Read number of data directories (should be 16)
+- [x] **2.5.18** Log all optional header fields
 
 ### 2.6 Data Directories Parsing
 - [ ] **2.6.1** Parse all 16 data directory entries:
-  - [ ] Export Table (index 0)
-  - [ ] Import Table (index 1) **[CRITICAL]**
-  - [ ] Resource Table (index 2)
-  - [ ] Exception Table (index 3)
-  - [ ] Certificate Table (index 4)
-  - [ ] Base Relocation Table (index 5) **[CRITICAL]**
-  - [ ] Debug (index 6)
-  - [ ] Architecture (index 7)
-  - [ ] Global Ptr (index 8)
-  - [ ] TLS Table (index 9)
-  - [ ] Load Config Table (index 10)
-  - [ ] Bound Import (index 11)
-  - [ ] IAT (index 12) **[CRITICAL]**
-  - [ ] Delay Import Descriptor (index 13)
-  - [ ] CLR Runtime Header (index 14)
-  - [ ] Reserved (index 15)
-- [ ] **2.6.2** Store RVA and size for each directory
-- [ ] **2.6.3** Validate critical directories exist (Import, Reloc, IAT)
-- [ ] **2.6.4** Log data directory information
+  - [x] Export Table (index 0)
+  - [x] Import Table (index 1) **[CRITICAL]**
+  - [x] Resource Table (index 2)
+  - [x] Exception Table (index 3)
+  - [x] Certificate Table (index 4)
+  - [x] Base Relocation Table (index 5) **[CRITICAL]**
+  - [x] Debug (index 6)
+  - [x] Architecture (index 7)
+  - [x] Global Ptr (index 8)
+  - [x] TLS Table (index 9)
+  - [x] Load Config Table (index 10)
+  - [x] Bound Import (index 11)
+  - [x] IAT (index 12) **[CRITICAL]**
+  - [x] Delay Import Descriptor (index 13)
+  - [x] CLR Runtime Header (index 14)
+  - [x] Reserved (index 15)
+- [x] **2.6.2** Store RVA and size for each directory
+- [x] **2.6.3** Validate critical directories exist (Import, Reloc, IAT)
+- [x] **2.6.4** Log data directory information
 
 ### 2.7 Section Headers Parsing
 - [ ] **2.7.1** Read all section headers (number from COFF header)

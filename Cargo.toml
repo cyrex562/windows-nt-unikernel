@@ -16,23 +16,24 @@ license = "MIT"
 
 [workspace.dependencies]
 # PE parsing
-goblin = "0.8"
+goblin = "0.10"
 
 # Error handling
 anyhow = "1.0"
-thiserror = "1.0"
+thiserror = "2.0"
 
 # Serialization (for configs, debugging)
 serde = { version = "1.0", features = ["derive"], default-features = false }
 
 # Logging
 log = "0.4"
+env_logger = "0.11"
 
 # Bare-metal / no_std dependencies
 bitflags = "2.4"
-spin = "0.9"           # Spinlocks for no_std
+spin = "0.9"                                                  # Spinlocks for no_std
 lazy_static = { version = "1.4", features = ["spin_no_std"] }
-volatile = "0.5"       # Volatile memory operations
+volatile = "0.5"                                              # Volatile memory operations
 
 # Bootloader (for Phase 2)
 bootloader = "0.11"
