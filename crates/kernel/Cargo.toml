@@ -1,0 +1,33 @@
+[package]
+name = "kernel"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+common = { path = "../common", default-features = false }
+api-shim = { path = "../api-shim", default-features = false }
+bootloader.workspace = true
+spin.workspace = true
+lazy_static.workspace = true
+volatile.workspace = true
+bitflags.workspace = true
+
+# For x86_64 architecture
+x86_64 = "0.15"
+uart_16550 = "0.3"     # Serial port driver
+
+[dependencies.log]
+workspace = true
+default-features = false
+
+[[bin]]
+name = "kernel"
+path = "src/main.rs"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
