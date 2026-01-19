@@ -11,13 +11,15 @@ To execute a standard, compiled Windows x86_64 binary (`.exe`) inside a Unikerne
 For detailed information, see:
 
 - **[DESIGN.md](docs/DESIGN.md)** - Comprehensive architecture and design document
+- **[DEPENDENCIES.md](docs/DEPENDENCIES.md)** - Windows environment dependencies and requirements
 - **[AI_AGENT_GUIDE.md](docs/AI_AGENT_GUIDE.md)** - Guide for AI assistants navigating the codebase
 - **Phase Task Lists**:
-  - **[PHASE1.md](docs/PHASE1.md)** - Detailed checklist for Phase 1 (~194 tasks)
-  - **[PHASE2.md](docs/PHASE2.md)** - Detailed checklist for Phase 2 (~240 tasks)
-  - **[PHASE3.md](docs/PHASE3.md)** - Detailed checklist for Phase 3 (~135 tasks)
-  - **[PHASE4.md](docs/PHASE4.md)** - Detailed checklist for Phase 4 (~135 tasks)
-  - **[PHASE5.md](docs/PHASE5.md)** - Detailed checklist for Phase 5 (~215 tasks)
+  - **[PHASE1.md](docs/PHASE1.md)** - Userspace prototype (~194 tasks)
+  - **[PHASE2.md](docs/PHASE2.md)** - Kernel foundation (~240 tasks)
+  - **[PHASE3.md](docs/PHASE3.md)** - Windows execution context (~135 tasks)
+  - **[PHASE4.md](docs/PHASE4.md)** - API implementation (~135 tasks)
+  - **[PHASE5.md](docs/PHASE5.md)** - Expansion features (~215 tasks)
+  - **[PHASE6.md](docs/PHASE6.md)** - Advanced console features (~215 tasks)
 
 This document provides a high-level overview. For granular task-by-task implementation details, refer to the phase documents above.
 
